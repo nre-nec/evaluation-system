@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>إدارة المتقدمين | نظام التقييم</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+:root{
+  --bg:#f7fafc;
+  --panel:#ffffff;
+  --text:#0f172a;
+  --muted:#475569;
+  --primary:#2563eb;
+  --primary-2:#60a5fa;
+  --border:#e2e8f0;
+  --success:#16a34a;
+  --danger:#dc2626;
+  --shadow:0 20px 60px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family: 'Tajawal','Segoe UI',system-ui,-apple-system,Arial,sans-serif;
+  margin:0;background:linear-gradient(180deg,#eef2ff 0%, #f8fafc 100%);
+  color:var(--text);
+}
+.container{max-width:1100px;margin:24px auto;padding:0 16px}
+.card{
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:16px; box-shadow:var(--shadow); padding:24px;
+}
+.header{
+  background:linear-gradient(135deg,var(--primary),#3b82f6); color:#fff;
+  border-radius:20px; padding:28px; box-shadow:var(--shadow); margin-bottom:18px;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.header .title{font-size:22px; font-weight:800}
+.header .sub{opacity:.9; font-size:13px}
+.btn{border:0; padding:12px 18px; border-radius:10px; font-weight:700; cursor:pointer; transition:.25s}
+.btn-primary{background:var(--primary); color:#fff}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{background:transparent; color:#fff; border:1px solid rgba(255,255,255,.35)}
+.input, select, textarea{
+  width:100%; padding:12px 14px; border:1.5px solid var(--border));
+}
+.input, select, textarea{
+  background:#fff; border:1.5px solid var(--border); border-radius:10px; font-size:14px; outline:none;
+}
+.input:focus, select:focus, textarea:focus{border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.grid{display:grid; gap:16px}
+.grid-2{grid-template-columns:1fr 1fr}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+label{display:block; font-weight:700; color:#0f172a; margin-bottom:8px; font-size:13px}
+.table{width:100%; border-collapse:collapse}
+.table th, .table td{padding:12px 10px; border-bottom:1px solid var(--border); text-align:right}
+.table th{background:#f8fafc; color:#0f172a; font-weight:800}
+.badge{display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:800}
+.badge.success{background:#dcfce7; color:#166534}
+.badge.danger{background:#fee2e2; color:#b91c1c}
+.toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+.note{font-size:12px; color:var(--muted)}
+hr{border:0;border-top:1px solid var(--border); margin:16px 0}
+.topbar{display:flex; gap:10px; align-items:center}
+.userchip{background:#eef2ff; color:#1e3a8a; border-radius:999px; padding:8px 12px; font-weight:800; font-size:12px}
+select{appearance:none}
+a{color:var(--primary)}
+.footer-note{margin-top:8px; font-size:11px; color:#334155; opacity:.8; text-align:center}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <div class="title">إدارة بيانات المتقدمين</div>
+      <div class="sub">لأعضاء اللجنة فقط</div>
+    </div>
+    <div class="topbar">
+      <span id="userChip" class="userchip"></span>
+      <a class="btn btn-ghost" href="index.html">الواجهة</a>
+      <button class="btn btn-ghost" onclick="logout()">خروج</button>
+    </div>
+  </div>
+
+  <div class="card" id="addSection">
+    <h3 style="margin:0 0 12px 0">إضافة متقدم جديد</h3>
+    <div class="grid grid-3">
+      <div><label>الاسم</label><input id="name" class="input"/></div>
+      <div><label>القسم</label><input id="department" class="input"/></div>
+      <div><label>الوظيفة المتقدم لها</label><input id="position" class="input"/></div>
+      <div><label>رقم اللجنة</label><input id="committee" class="input" type="number"/></div>
+      <div><label>العام الجامعي</label><input id="year" class="input" placeholder="2025/2026"/></div>
+      <div style="display:flex;align-items:end;gap:8px">
+        <input id="visible" type="checkbox" style="transform:scale(1.2)" checked/>
+        <label for="visible">إظهار للمقيمين</label>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <button class="btn btn-primary" onclick="addApplicant()">إضافة</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 12px 0">قائمة المتقدمين</h3>
+    <div class="toolbar">
+      <input id="q" class="input" placeholder="بحث بالاسم/القسم..."/>
+      <button class="btn btn-primary" onclick="loadApplicants()">تحديث</button>
+    </div>
+    <div style="margin-top:12px; overflow:auto">
+      <table class="table" id="tbl">
+        <thead>
+          <tr><th>الاسم</th><th>القسم</th><th>الوظيفة</th><th>اللجنة</th><th>العام</th><th>للظهور</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <p class="footer-note">© نظام إدارة المقابلات – كلية الشمال للتمريض الأهلية</p>
+</div>
+
+<script>
+const API = '/api';
+
+let auth;
+document.addEventListener('DOMContentLoaded', () => {
+  auth = JSON.parse(sessionStorage.getItem('auth')||'null');
+  if(!auth) return location.href='login.html';
+  document.getElementById('userChip').textContent = auth.username + ' • ' + auth.role + (auth.committee?(' • لجنة '+auth.committee):'');
+  if(!(auth.role==='committee' || auth.role==='admin')){
+    alert('هذه الصفحة خاصة باللجنة.'); return location.href='index.html';
+  }
+  loadApplicants();
+  document.getElementById('q').addEventListener('input', render);
+});
+
+function logout(){ sessionStorage.removeItem('auth'); location.href='login.html'; }
+
+async function loadApplicants(){
+  const r = await fetch(API+'/applicants', { headers:{'Authorization':'Bearer '+auth.token}});
+  const j = await r.json();
+  window.__applicants = Array.isArray(j)? j : [];
+  render();
+}
+
+function render(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const tb = document.querySelector('#tbl tbody');
+  tb.innerHTML='';
+  (window.__applicants||[]).filter(a=>!q || [a.name,a.department,a.position].join(' ').toLowerCase().includes(q)).forEach(a=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHTML(a.name)}</td>
+      <td>${escapeHTML(a.department||'')}</td>
+      <td>${escapeHTML(a.position||'')}</td>
+      <td>${escapeHTML(a.committee||'')}</td>
+      <td>${escapeHTML(a.year||'')}</td>
+      <td>${a.visible?'<span class="badge success">ظاهر</span>':'<span class="badge danger">مخفي</span>'}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+async function addApplicant(){
+  const body = {
+    name: val('name'), department: val('department'), position: val('position'),
+    committee: val('committee'), year: val('year'), visible: document.getElementById('visible').checked
+  };
+  if(!body.name){ return alert('أدخل الاسم'); }
+  const r = await fetch(API+'/applicants', {
+    method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+auth.token},
+    body: JSON.stringify(body)
+  });
+  const j = await r.json();
+  if(!r.ok || !j.ok) return alert(j.error || 'فشل الحفظ');
+  ['name','department','position','committee','year'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('visible').checked=true;
+  await loadApplicants();
+}
+
+function val(id){return document.getElementById(id).value.trim()}
+function escapeHTML(s){return (''+s).replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+</script>
+</body>
+</html>

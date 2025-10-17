@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>واجهة التقييم | NCN Evaluation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+:root{
+  --bg:#f7fafc;
+  --panel:#ffffff;
+  --text:#0f172a;
+  --muted:#475569;
+  --primary:#2563eb;
+  --primary-2:#60a5fa;
+  --border:#e2e8f0;
+  --success:#16a34a;
+  --danger:#dc2626;
+  --shadow:0 20px 60px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family: 'Tajawal','Segoe UI',system-ui,-apple-system,Arial,sans-serif;
+  margin:0;background:linear-gradient(180deg,#eef2ff 0%, #f8fafc 100%);
+  color:var(--text);
+}
+.container{max-width:1100px;margin:24px auto;padding:0 16px}
+.card{
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:16px; box-shadow:var(--shadow); padding:24px;
+}
+.header{
+  background:linear-gradient(135deg,var(--primary),#3b82f6); color:#fff;
+  border-radius:20px; padding:28px; box-shadow:var(--shadow); margin-bottom:18px;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.header .title{font-size:22px; font-weight:800}
+.header .sub{opacity:.9; font-size:13px}
+.btn{border:0; padding:12px 18px; border-radius:10px; font-weight:700; cursor:pointer; transition:.25s}
+.btn-primary{background:var(--primary); color:#fff}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{background:transparent; color:#fff; border:1px solid rgba(255,255,255,.35)}
+.input, select, textarea{
+  width:100%; padding:12px 14px; border:1.5px solid var(--border));
+}
+.input, select, textarea{
+  background:#fff; border:1.5px solid var(--border); border-radius:10px; font-size:14px; outline:none;
+}
+.input:focus, select:focus, textarea:focus{border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.grid{display:grid; gap:16px}
+.grid-2{grid-template-columns:1fr 1fr}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+label{display:block; font-weight:700; color:#0f172a; margin-bottom:8px; font-size:13px}
+.table{width:100%; border-collapse:collapse}
+.table th, .table td{padding:12px 10px; border-bottom:1px solid var(--border); text-align:right}
+.table th{background:#f8fafc; color:#0f172a; font-weight:800}
+.badge{display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:800}
+.badge.success{background:#dcfce7; color:#166534}
+.badge.danger{background:#fee2e2; color:#b91c1c}
+.toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+.note{font-size:12px; color:var(--muted)}
+hr{border:0;border-top:1px solid var(--border); margin:16px 0}
+.topbar{display:flex; gap:10px; align-items:center}
+.userchip{background:#eef2ff; color:#1e3a8a; border-radius:999px; padding:8px 12px; font-weight:800; font-size:12px}
+select{appearance:none}
+a{color:var(--primary)}
+.footer-note{margin-top:8px; font-size:11px; color:#334155; opacity:.8; text-align:center}
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <div class="title">واجهة التقييم</div>
+        <div class="sub">NCN Interview Evaluation</div>
+      </div>
+      <div class="topbar">
+        <span id="activeUser" class="userchip"></span>
+        <a class="btn btn-ghost" href="applicants.html">إدارة المتقدمين</a>
+        <a class="btn btn-ghost" href="login.html">تبديل المستخدم</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="grid grid-3">
+        <div>
+          <label>المتقدم</label>
+          <select id="applicantSelect" class="input"></select>
+        </div>
+        <div>
+          <label>القسم</label>
+          <input id="department" class="input" readonly/>
+        </div>
+        <div>
+          <label>الوظيفة المتقدم لها</label>
+          <input id="position" class="input" readonly/>
+        </div>
+        <div>
+          <label>رقم اللجنة</label>
+          <input id="committee" class="input" readonly/>
+        </div>
+        <div>
+          <label>العام الجامعي</label>
+          <input id="year" class="input" readonly/>
+        </div>
+        <div>
+          <label>تاريخ المقابلة</label>
+          <input id="interviewDate" class="input" type="date" readonly/>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 12px 0">معايير التقييم</h3>
+      <div class="grid grid-2">
+        <div>
+          <label>المؤهل والخبرة (حتى 40)</label>
+          <input id="score1" class="input" type="number" min="0" max="40">
+        </div>
+        <div>
+          <label>السمات الشخصية (حتى 30)</label>
+          <input id="score2" class="input" type="number" min="0" max="30">
+        </div>
+        <div>
+          <label>التواصل والعمل الجماعي (حتى 20)</label>
+          <input id="score3" class="input" type="number" min="0" max="20">
+        </div>
+        <div>
+          <label>الثقافة العامة (حتى 10)</label>
+          <input id="score4" class="input" type="number" min="0" max="10">
+        </div>
+        <div class="grid" style="grid-template-columns:1fr auto; align-items:center">
+          <div><label>ملاحظات</label><textarea id="remarks" class="input" rows="3"></textarea></div>
+          <div><label>المجموع</label><div id="total" class="userchip" style="font-size:16px">0 / 100</div></div>
+        </div>
+      </div>
+      <div style="margin-top:12px; display:flex; gap:10px; justify-content:flex-end">
+        <button class="btn btn-primary" id="saveBtn">حفظ التقييم</button>
+      </div>
+      <div class="footer-note">تم إعداد هذا النموذج بواسطة نظام تقييم المقابلات – كلية الشمال للتمريض الأهلية | © وحدة التطوير والجودة</div>
+    </div>
+
+    <div class="card">
+      <div class="topbar" style="justify-content:space-between">
+        <strong>لوحة موجزة</strong>
+        <button class="btn btn-primary" onclick="exportCSV()">تصدير CSV</button>
+      </div>
+      <div class="grid grid-2" style="margin-top:12px">
+        <div class="card" style="box-shadow:none">
+          <canvas id="deptChart" style="max-height:260px"></canvas>
+        </div>
+        <div class="card" style="box-shadow:none">
+          <table class="table" id="reportTable">
+            <thead><tr><th>المتقدم</th><th>القسم</th><th>المتوسط</th><th>الحالة</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API = '/api';
+let auth, applicants=[], evaluations=[];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  auth = JSON.parse(sessionStorage.getItem('auth')||'null');
+  if(!auth) return location.href='login.html';
+  document.getElementById('activeUser').textContent = auth.username + ' • ' + auth.role + (auth.committee?(' • لجنة '+auth.committee):'');
+  document.getElementById('interviewDate').valueAsDate = new Date();
+  ['score1','score2','score3','score4'].forEach(id=>document.getElementById(id).addEventListener('input', updateTotal));
+  await loadApplicants();
+  await loadEvaluations();
+  renderApplicantsSelect();
+  renderDashboard();
+  document.getElementById('saveBtn').addEventListener('click', saveEvaluation);
+});
+
+function updateTotal(){
+  const s1=+val('score1')||0, s2=+val('score2')||0, s3=+val('score3')||0, s4=+val('score4')||0;
+  document.getElementById('total').textContent = (s1+s2+s3+s4).toFixed(1)+' / 100';
+}
+
+async function loadApplicants(){
+  const r = await fetch(API+'/applicants', { headers:{'Authorization':'Bearer '+auth.token} });
+  applicants = await r.json();
+}
+async function loadEvaluations(){
+  const r = await fetch(API+'/evaluations');
+  evaluations = await r.json();
+}
+
+function renderApplicantsSelect(){
+  const sel = document.getElementById('applicantSelect');
+  sel.innerHTML = applicants.map(a=>`<option value="${escapeAttr(a.id||a.name)}">${escapeHTML(a.name)}${a.year?(' • '+escapeHTML(a.year)) : ''}</option>`).join('');
+  sel.addEventListener('change', fillApplicantFields);
+  fillApplicantFields();
+}
+
+function fillApplicantFields(){
+  const id = document.getElementById('applicantSelect').value;
+  const a = applicants.find(x=>(x.id||x.name) == id) || {};
+  setVal('department', a.department||''); setVal('position', a.position||'');
+  setVal('committee', a.committee||''); setVal('year', a.year||'');
+}
+
+async function saveEvaluation(){
+  const appId = document.getElementById('applicantSelect').value;
+  if(!appId) return alert('اختر متقدمًا');
+  const payload = {
+    applicantId: appId,
+    applicantName: (applicants.find(a=>(a.id||a.name)==appId)||{}).name || '',
+    evaluatorName: auth.username,
+    committee: auth.committee||'',
+    year: val('year'),
+    interviewDate: val('interviewDate'),
+    score1:+val('score1')||0, score2:+val('score2')||0, score3:+val('score3')||0, score4:+val('score4')||0,
+    total: ((+val('score1')||0) + (+val('score2')||0) + (+val('score3')||0) + (+val('score4')||0)),
+    remarks: val('remarks'), timestamp: new Date().toISOString()
+  };
+  const r = await fetch(API+'/evaluations', {
+    method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+auth.token},
+    body: JSON.stringify(payload)
+  });
+  const j = await r.json();
+  if(!r.ok || !j.ok) return alert(j.error || 'تعذر الحفظ');
+  alert('تم حفظ التقييم');
+  await loadEvaluations();
+  renderDashboard();
+}
+
+function renderDashboard(){
+  const tb = document.querySelector('#reportTable tbody'); tb.innerHTML='';
+  const agg = {};
+  evaluations.forEach(e=>{
+    const key = e.applicantName||e.applicantId;
+    if(!agg[key]) agg[key]={name:e.applicantName||e.applicantId, dept:'', scores:[]};
+    agg[key].scores.push(e.total||0);
+  });
+  Object.values(agg).forEach(x=>{
+    const avg = x.scores.length? x.scores.reduce((a,b)=>a+b,0)/x.scores.length : 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHTML(x.name)}</td><td>${escapeHTML('')}</td>
+      <td>${avg.toFixed(1)}</td><td>${avg>=70?'<span class="badge success">موصى به</span>':'<span class="badge danger">غير موصى به</span>'}</td>`;
+    tb.appendChild(tr);
+  });
+
+  const counts = {}; applicants.forEach(a=>{ counts[a.department] = (counts[a.department]||0)+1; });
+  const ctx = document.getElementById('deptChart');
+  if(window.__deptChart) window.__deptChart.destroy();
+  window.__deptChart = new Chart(ctx,{type:'bar', data:{labels:Object.keys(counts), datasets:[{label:'Applicants', data:Object.values(counts)}]}, options:{responsive:true, scales:{y:{beginAtZero:true}}}});
+}
+
+function exportCSV(){
+  const headers = ['ApplicantId','ApplicantName','EvaluatorName','Committee','Year','Score1','Score2','Score3','Score4','Total','Remarks','Date'];
+  const rows = evaluations.map(e=>[e.applicantId,e.applicantName,e.evaluatorName,e.committee,e.year,e.score1,e.score2,e.score3,e.score4,e.total,e.remarks,e.interviewDate]);
+  const csv = [headers.join(','), ...rows.map(r=>r.map(csvCell).join(','))].join('\n');
+  const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='evaluations.csv'; a.click();
+}
+
+function csvCell(v){ v=''+(v==null?'':v); if(v.includes(',')||v.includes('"')||v.includes('\n')) return '"' + v.replace(/"/g,'""') + '"'; return v; }
+function val(id){return document.getElementById(id).value}
+function setVal(id,v){document.getElementById(id).value = v}
+function escapeHTML(s){return (''+s).replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+function escapeAttr(s){return (''+s).replace(/"/g,'&quot;')}
+</script>
+</body>
+</html>
