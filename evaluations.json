@@ -1,0 +1,17 @@
+[
+  {
+    "applicantId": "A001",
+    "evaluatorName": "Dr.Ahmed",
+    "committee": "1",
+    "year": "2025/2026",
+    "scores": {
+      "q1": 35,
+      "q2": 28,
+      "q3": 18,
+      "q4": 9
+    },
+    "total": 90,
+    "remarks": "مرشح ممتاز",
+    "timestamp": "2025-10-17T09:45:00Z"
+  }
+]
