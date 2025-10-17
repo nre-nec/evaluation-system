@@ -1,44 +1,196 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>تسجيل الدخول | NCN</title>
-  <link rel="stylesheet" href="assets/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نظام تقييم المقابلات | Interview Evaluation System</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <style>
+    body {
+      font-family: 'Tajawal', 'Segoe UI', sans-serif;
+      background-color: #fafafa;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem 3rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 400px;
+      max-width: 90%;
+    }
+
+    .logo {
+      width: 120px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin: 0.5rem 0;
+      color: #5b3e91;
+    }
+
+    h2 {
+      font-size: 1rem;
+      color: #777;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      text-align: right;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    button {
+      width: 100%;
+      background-color: #5b3e91;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 1rem;
+      margin-top: 1.5rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #7a52b3;
+    }
+
+    .lang-toggle {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      border: 1px solid #7a52b3;
+      background: white;
+      color: #7a52b3;
+      border-radius: 10px;
+      padding: 5px 12px;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #666;
+      text-align: center;
+    }
+  </style>
 </head>
-<body data-page="login">
-  <div class="container">
-    <header class="header">
-      <img class="logo" src="assets/logo.png" alt="NCN Logo">
-      <div class="title">
-        <h1>نظام تقييم المقابلات <span class="small-en">Interview Evaluation System</span></h1>
-        <p>كلية الشمال للتمريض الأهلية <span class="small-en">North Private College of Nursing</span></p>
-      </div>
-      <div class="actions">
-        <a href="login.html"><button class="secondary">العربية | English</button></a>
-      </div>
-    </header>
+<body>
 
-    <section class="card">
-      <div class="grid">
-        <div>
-          <label>اسم المقيم <span class="small-en">Evaluator Name</span></label>
-          <select id="evaluatorSelect" class="input"></select>
-        </div>
-        <div>
-          <label>كلمة المرور <span class="small-en">Password</span></label>
-          <input id="passwordInput" type="password" class="input" placeholder="••••••••">
-        </div>
-      </div>
-      <div style="margin-top:16px; display:flex; gap:8px;">
-        <button id="loginBtn">تسجيل الدخول | Login</button>
-      </div>
-    </section>
+  <button class="lang-toggle" onclick="toggleLanguage()">English | العربية</button>
 
-    <p class="footer">تم إعداد هذا النموذج بواسطة نظام تقييم المقابلات – كلية الشمال للتمريض الأهلية | © وحدة التطوير والجودة</p>
+  <div class="container" id="loginBox">
+    <img src="logo.png" class="logo" alt="Logo" />
+    <h1 id="title-ar">نظام تقييم المقابلات</h1>
+    <h1 id="title-en" style="display:none;">Interview Evaluation System</h1>
+    <h2>كلية الشمال للتمريض الأهلية | North Private College of Nursing</h2>
+
+    <label for="evaluatorSelect" id="label-name">اسم المقيم | Evaluator Name</label>
+    <select id="evaluatorSelect"></select>
+
+    <label for="password" id="label-pass">كلمة المرور | Password</label>
+    <input type="password" id="password" placeholder="••••••" />
+
+    <button onclick="login()">تسجيل الدخول | Login</button>
   </div>
 
-  <script src="assets/main.js"></script>
+  <footer>
+    تم إعداد هذا النموذج بواسطة نظام تقييم المقابلات – كلية الشمال للتمريض الأهلية | 
+    © وحدة التطوير والجودة
+  </footer>
+
+  <script>
+    const apiBase = "https://evaluation-api.drelsodany3.workers.dev";
+
+    // تحميل قائمة المقيمين من API
+    async function loadEvaluators() {
+      try {
+        const response = await fetch(`${apiBase}/evaluators`);
+        if (!response.ok) throw new Error("API Error");
+        const evaluators = await response.json();
+
+        const select = document.getElementById("evaluatorSelect");
+        select.innerHTML = "";
+
+        evaluators.forEach(e => {
+          const option = document.createElement("option");
+          option.value = e.username;
+          option.textContent = e.username;
+          select.appendChild(option);
+        });
+      } catch (err) {
+        alert("تعذر تحميل قائمة المقيمين / Unable to load evaluators");
+        console.error(err);
+      }
+    }
+
+    // عملية تسجيل الدخول
+    async function login() {
+      const username = document.getElementById("evaluatorSelect").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!username || !password) {
+        alert("يرجى إدخال جميع الحقول / Please fill in all fields");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${apiBase}/evaluators`);
+        const data = await res.json();
+        const user = data.find(u => u.username === username && u.password === password);
+
+        if (user) {
+          localStorage.setItem("loggedUser", JSON.stringify(user));
+          window.location.href = "applicants.html";
+        } else {
+          alert("بيانات الدخول غير صحيحة / Invalid credentials");
+        }
+      } catch (err) {
+        alert("تعذر الاتصال بالنظام / Unable to connect to the system");
+        console.error(err);
+      }
+    }
+
+    // تبديل اللغة
+    function toggleLanguage() {
+      const ar = document.getElementById("title-ar");
+      const en = document.getElementById("title-en");
+      if (ar.style.display === "none") {
+        ar.style.display = "";
+        en.style.display = "none";
+        document.body.dir = "rtl";
+      } else {
+        ar.style.display = "none";
+        en.style.display = "";
+        document.body.dir = "ltr";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadEvaluators);
+  </script>
 </body>
 </html>
