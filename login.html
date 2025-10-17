@@ -1,48 +1,93 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>تسجيل الدخول | NCN</title>
-<link rel="stylesheet" href="assets/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نظام تقييم المقابلات | Interview Evaluation System</title>
+  <link rel="icon" type="image/png" href="logo.png" />
+  <style>
+    body {font-family: "Tajawal", sans-serif; background-color:#fafafa; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh;}
+    .container {background:white; box-shadow:0 4px 20px rgba(0,0,0,0.1); border-radius:16px; padding:30px 40px; max-width:600px; width:90%; text-align:center;}
+    h2 {color:#4a2e82; margin-bottom:5px;} h3 {color:#666; font-weight:normal; margin-top:0;}
+    img {width:80px; margin-bottom:10px;} label {display:block; text-align:right; margin-top:15px; color:#333; font-weight:bold;}
+    select, input {width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-top:5px; font-size:16px;}
+    button {width:100%; margin-top:25px; background:#4a2e82; color:white; border:none; padding:12px; border-radius:8px; font-size:18px; cursor:pointer; transition:background 0.3s;}
+    button:hover {background:#6d44b8;} .lang-switch {position:absolute; top:20px; left:20px; background:#fff; border:1px solid #ccc; border-radius:10px; padding:6px 12px; cursor:pointer;}
+    footer {margin-top:30px; color:#666; font-size:14px; text-align:center;}
+  </style>
 </head>
 <body>
-<header class="header">
-  <div class="brand">
-    <img src="logo.png" alt="NCN">
-    <h1>نظام تقييم المقابلات <span class="badge">Interview Evaluation</span></h1>
-  </div>
-  <div></div>
-</header>
-<div class="container">
-  <div class="card center">
-    <p class="muted">اختر اسم المستخدم ثم أدخل كلمة المرور | Select username & enter password</p>
-    <div class="grid">
-      <div><label>اسم المستخدم / Username</label><select id="name" class="input"><option selected disabled>اختر اسم المستخدم</option></select></div>
-      <div><label>كلمة المرور / Password</label><input type="password" id="pwd" class="input" placeholder="••••••••"></div>
-    </div>
-    <div class="actions" style="justify-content:center;margin-top:12px">
-      <button id="loginBtn">تسجيل الدخول | Login</button>
-    </div>
-  </div>
-  <p class="footer">© كلية الشمال للتمريض الأهلية — وحدة التطوير والجودة</p>
-</div>
-<script src="assets/app.js"></script>
-<script>
-(async ()=>{
-  try{ const evals = await apiGet('evaluators'); const sel = document.getElementById('name'); evals.forEach(e=>{ const o=document.createElement('option'); o.value=e.username; o.textContent=e.username; o.dataset.role=e.role||'evaluator'; o.dataset.committee=e.committee||''; sel.appendChild(o); }); }
-  catch(e){ toast('تعذر تحميل قائمة المستخدمين / Unable to load evaluators','err'); }
-})();
+  <div class="lang-switch" id="langSwitch">English | العربية</div>
+  <div class="container" id="loginBox">
+    <img src="logo.png" alt="Logo" />
+    <h2 id="titleAr">نظام تقييم المقابلات</h2>
+    <h2 id="titleEn" style="display:none;">Interview Evaluation System</h2>
+    <h3>كلية الشمال للتمريض الأهلية<br><span style="color:#8a65b8;">North Private College of Nursing</span></h3>
 
-document.getElementById('loginBtn').addEventListener('click', async ()=>{
-  const u = document.getElementById('name').value;
-  const p = document.getElementById('pwd').value.trim();
-  if(!u||u==='اختر اسم المستخدم' || !p) return toast('يرجى اختيار اسم المستخدم وإدخال كلمة المرور','err');
-  try{ const evals = await apiGet('evaluators'); const user = evals.find(x=>x.username===u && x.password===p); if(!user) return toast('بيانات الدخول غير صحيحة','err');
-    saveSession({user:{username:user.username, role:user.role||'evaluator', committee:user.committee||''}});
-    if(user.role==='admin') location.href='admin-dashboard.html';
-    else if(user.role==='committee') location.href='committee-evaluation.html';
-    else location.href='evaluation-form.html';
-  }catch(e){ toast('تعذر الاتصال بالخادم','err'); }
-});
-</script>
-</body></html>
+    <label id="labelEvaluator">اسم المستخدم / Username</label>
+    <select id="evaluatorSelect"><option selected disabled>اختر اسم المستخدم</option></select>
+
+    <label id="labelPassword">كلمة المرور / Password</label>
+    <input type="password" id="passwordInput" placeholder="•••••••" />
+
+    <button id="loginBtn">تسجيل الدخول | Login</button>
+  </div>
+  <footer>تم إعداد هذا النظام بواسطة وحدة التطوير والجودة © كلية الشمال للتمريض الأهلية</footer>
+
+  <script>
+    const apiBase = "https://evaluation-api.drelsodany3.workers.dev";
+
+    async function loadEvaluators() {
+      try {
+        const response = await fetch(`${apiBase}/evaluators`);
+        if (!response.ok) throw new Error("API error");
+        const evaluators = await response.json();
+        const select = document.getElementById("evaluatorSelect");
+        evaluators.forEach(e => {
+          const option = document.createElement("option");
+          option.value = e.username;
+          option.textContent = e.username;
+          select.appendChild(option);
+        });
+      } catch (err) {
+        alert("تعذر تحميل قائمة المستخدمين / Unable to load evaluators");
+        console.error(err);
+      }
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const username = document.getElementById("evaluatorSelect").value;
+      const password = document.getElementById("passwordInput").value.trim();
+      if (!username || username === "اختر اسم المستخدم") {
+        alert("يرجى اختيار اسم المستخدم أولاً / Please select username first");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${apiBase}/evaluators`);
+        const evaluators = await response.json();
+        const user = evaluators.find(u => u.username === username && u.password === password);
+        if (!user) {
+          alert("❌ اسم المستخدم أو كلمة المرور غير صحيحة / Invalid username or password");
+          return;
+        }
+        localStorage.setItem("evaluator", JSON.stringify(user));
+        if (user.role === "admin") window.location.href = "admin.html";
+        else if (user.role === "committee") window.location.href = "committee.html";
+        else window.location.href = "applicants.html";
+      } catch (err) {
+        alert("تعذر الاتصال بالخادم / Connection error");
+      }
+    });
+
+    document.getElementById("langSwitch").addEventListener("click", () => {
+      const ar = document.getElementById("titleAr");
+      const en = document.getElementById("titleEn");
+      if (ar.style.display === "none") {ar.style.display="block"; en.style.display="none";}
+      else {ar.style.display="none"; en.style.display="block";}
+    });
+
+    document.addEventListener("DOMContentLoaded", loadEvaluators);
+  </script>
+</body>
+</html>
