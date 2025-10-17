@@ -1,0 +1,58 @@
+
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>نموذج التقييم | NCN</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-page="evaluation">
+  <div class="container">
+    <header class="header">
+      <img class="logo" src="assets/logo.png" alt="NCN Logo">
+      <div class="title">
+        <h1>نموذج التقييم <span class="small-en">Evaluation Form</span></h1>
+        <p>المقيم: <strong id="whoami"></strong> — المتقدم: <strong id="appName"></strong></p>
+        <p>القسم: <span id="appDept"></span> — الوظيفة: <span id="appPos"></span> — اللجنة: <span id="appCommittee"></span> — العام: <span id="appYear"></span></p>
+      </div>
+      <div class="actions">
+        <a href="applicants.html"><button class="secondary">الرجوع للقائمة</button></a>
+        <button id="logoutBtn" class="ghost">تسجيل خروج | Logout</button>
+      </div>
+    </header>
+
+    <section class="card" id="scores">
+      <div class="grid">
+        <div>
+          <label>المعيار 1 <span class="small-en">Criterion 1</span></label>
+          <input id="q1" type="number" min="0" max="40" class="input" placeholder="0 - 40">
+        </div>
+        <div>
+          <label>المعيار 2 <span class="small-en">Criterion 2</span></label>
+          <input id="q2" type="number" min="0" max="30" class="input" placeholder="0 - 30">
+        </div>
+        <div>
+          <label>المعيار 3 <span class="small-en">Criterion 3</span></label>
+          <input id="q3" type="number" min="0" max="20" class="input" placeholder="0 - 20">
+        </div>
+        <div>
+          <label>المعيار 4 <span class="small-en">Criterion 4</span></label>
+          <input id="q4" type="number" min="0" max="10" class="input" placeholder="0 - 10">
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <label>ملاحظات <span class="small-en">Remarks</span></label>
+        <textarea id="remarks" rows="3" class="input" placeholder="ملاحظات عامة / General notes"></textarea>
+      </div>
+      <div style="display:flex; align-items:center; gap:16px; margin-top:16px">
+        <div><strong>المجموع:</strong> <span id="totalScore">0</span> / 100</div>
+        <button id="saveBtn">حفظ التقييم | Save</button>
+      </div>
+    </section>
+
+    <p class="footer">تم إعداد هذا النموذج بواسطة نظام تقييم المقابلات – كلية الشمال للتمريض الأهلية | © وحدة التطوير والجودة</p>
+  </div>
+  <script src="assets/main.js"></script>
+</body>
+</html>
