@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة المشرف | Admin Dashboard</title>
+<link rel="stylesheet" href="assets/style.css"></head>
+<body>
+<header class="header">
+  <div class="brand"><img src="logo.png"><h1>لوحة المشرف <span class="badge">Admin</span></h1></div>
+  <div class="actions"><span class="user">المستخدم: <b id="who"></b></span><button class="ghost" onclick="logout()">تسجيل خروج</button></div>
+</header>
+<div class="container">
+  <div class="card">
+    <h3>المقيمون واللجان <span class="badge">Evaluators</span></h3>
+    <div class="actions"><button id="expEval" class="ghost">تصدير CSV</button></div>
+    <table class="table" id="tblEval"><thead><tr><th>الاسم</th><th>الدور</th><th>اللجنة</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>المتقدمون <span class="badge">Applicants</span></h3>
+    <div class="actions"><button id="expApp" class="ghost">تصدير CSV</button></div>
+    <table class="table" id="tblApp"><thead><tr><th>رقم</th><th>الاسم</th><th>القسم</th><th>الوظيفة</th><th>اللجنة</th><th>العام</th><th>ظاهر للمقيمين</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>نتائج التقييم <span class="badge">Evaluations</span></h3>
+    <div class="actions"><button id="expRes" class="ghost">تصدير CSV</button><button onclick="window.print()">طباعة / PDF</button></div>
+    <table class="table" id="tblRes"><thead><tr><th>المتقدم</th><th>المقيم</th><th>اللجنة</th><th>العام</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>المجموع</th><th>ملاحظات</th><th>الوقت</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+<script src="assets/app.js"></script>
+<script>
+const s = ensureAuth(); if(s) document.getElementById('who').textContent=s.user.username;
+
+let E=[], A=[], R=[];
+(async ()=>{
+  try{ E = await apiGet('evaluators'); A = await apiGet('applicants'); R = await apiGet('evaluations'); }
+  catch(e){ toast('تعذر تحميل البيانات','err'); return; }
+
+  const evalBody = document.querySelector('#tblEval tbody');
+  evalBody.innerHTML = E.map(x=>`<tr><td>${x.username}</td><td>${x.role||''}</td><td>${x.committee||''}</td></tr>`).join('');
+
+  const appBody = document.querySelector('#tblApp tbody');
+  appBody.innerHTML = A.map(a=>`<tr><td>${a.id||''}</td><td>${a.name||''}</td><td>${a.department||''}</td><td>${a.position||''}</td><td>${a.committee||''}</td><td>${a.year||''}</td><td>${a.visible? '✔️':'❌'}</td></tr>`).join('');
+
+  const resBody = document.querySelector('#tblRes tbody');
+  resBody.innerHTML = R.map(r=>`<tr><td>${r.applicantId||''}</td><td>${r.evaluatorName||''}</td><td>${r.committee||''}</td><td>${r.year||''}</td><td>${r.scores?.q1||0}</td><td>${r.scores?.q2||0}</td><td>${r.scores?.q3||0}</td><td>${r.scores?.q4||0}</td><td>${r.total||0}</td><td>${r.remarks||''}</td><td>${r.timestamp||''}</td></tr>`).join('');
+
+  document.getElementById('expEval').onclick = ()=>exportCSV('evaluators.csv', [['username','role','committee'], ...E.map(x=>[x.username,x.role||'',x.committee||''])]);
+  document.getElementById('expApp').onclick = ()=>exportCSV('applicants.csv', [['id','name','department','position','committee','year','visible'], ...A.map(a=>[a.id||'',a.name||'',a.department||'',a.position||'',a.committee||'',a.year||'',a.visible?'yes':'no'])]);
+  document.getElementById('expRes').onclick = ()=>exportCSV('evaluations.csv', [['applicantId','evaluatorName','committee','year','q1','q2','q3','q4','total','remarks','timestamp'], ...R.map(r=>[r.applicantId||'',r.evaluatorName||'',r.committee||'',r.year||'',r.scores?.q1||0,r.scores?.q2||0,r.scores?.q3||0,r.scores?.q4||0,r.total||0,r.remarks||'',r.timestamp||''])]);
+})();
+</script>
+</body></html>
