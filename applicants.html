@@ -1,44 +1,26 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>المتقدمون | NCN</title>
-  <link rel="stylesheet" href="assets/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة المقيم | Evaluator Dashboard</title>
+  <style>
+    body {font-family:"Tajawal",sans-serif;background:#f8f8fa;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
+    .box {background:white;border-radius:12px;padding:40px;width:80%;max-width:600px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+    h1 {color:#4a2e82;} button {padding:10px 20px;border:none;border-radius:8px;background:#4a2e82;color:white;cursor:pointer;margin-top:20px;}
+    button:hover {background:#6d44b8;}
+  </style>
 </head>
-<body data-page="applicants">
-  <div class="container">
-    <header class="header">
-      <img class="logo" src="assets/logo.png" alt="NCN Logo">
-      <div class="title">
-        <h1>المتقدمون للتقييم <span class="small-en">Applicants</span></h1>
-        <p>مرحبًا، <strong id="whoami"></strong></p>
-      </div>
-      <div class="actions">
-        <button id="logoutBtn" class="ghost">تسجيل خروج | Logout</button>
-      </div>
-    </header>
-
-    <section class="card">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>رقم</th>
-            <th>الاسم</th>
-            <th>القسم</th>
-            <th>الوظيفة</th>
-            <th>رقم اللجنة</th>
-            <th>العام الجامعي</th>
-            <th>إجراء</th>
-          </tr>
-        </thead>
-        <tbody id="applicantsBody"></tbody>
-      </table>
-    </section>
-
-    <p class="footer">تم إعداد هذا النموذج بواسطة نظام تقييم المقابلات – كلية الشمال للتمريض الأهلية | © وحدة التطوير والجودة</p>
+<body>
+  <div class="box">
+    <img src="logo.png" alt="logo" style="width:80px" />
+    <h1>مرحبًا بالمقيم</h1>
+    <h2>Welcome, Evaluator</h2>
+    <p>مرحبًا بك في النظام | Welcome to the Interview Evaluation System</p>
+    <button onclick="logout()">تسجيل خروج | Logout</button>
   </div>
-  <script src="assets/main.js"></script>
+  <script>
+    function logout() {localStorage.clear(); window.location.href='login.html';}
+  </script>
 </body>
 </html>
